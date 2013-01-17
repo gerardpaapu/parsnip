@@ -1,4 +1,4 @@
-{Parser} = require 'Parser'
+{Parser} = require './Parser'
 
 Parser::continueWith = (createParser) ->
     new Parser (source) =>

@@ -1,8 +1,41 @@
-# Calling Parser::parse(source : Port) returns a Result.
+###
+The Parser class exposes the method parse which attempts 
+to extract a value from an input `source`.
+
+Parser::parse (source) -> Result<Continuation, Message>
+
+`parse` on a given source, returns either a `Success`
+which contains a Continuation or a Failure which contains
+a Message communicating why and where it failed.
+###
+
 class Parser
     constructor: (@parse) ->
     parse: (source) ->
         throw new Error 'Not Implemented'
+
+###
+A Continuation contains the value that was successfully
+parsed out of source, and the remainder of source that
+was not consumed.
+
+When a `parse` succeeds we may continue by parsing the
+remaining source with another parser.
+###
+
+class Continuation
+    constructor: (@value, @source) ->
+
+###
+A Message contains human readable text explaining why the
+parse failed and the source it failed on.
+###
+
+class Message
+    constructor: (@text, @source) ->
+
+
+{Result, Success, Failure} = require './Result'
 
 class Parser.Succeed extends Parser
     constructor: (@value) ->
@@ -28,33 +61,6 @@ class Parser.Exactly extends Parser
             message = new Message reason, source
             new Failure message
 
-class Message
-    # encode the reason for failure and the source location
-    constructor: (@text, @source) ->
-
-class Continuation
-    # A Parser continuation contains a value
-    # derived from a source and the remainder of the
-    # source that is unparsed
-    constructor: (@value, @source) ->
-
-    # makeParserAndContinue: (makeParser: (v) -> Parser) -> Result
-    makeParserAndContinue: (makeParser) ->
-        (makeParser @value).parse @source
-
-Parser::continueWith = (createParser) ->
-    new Parser (source) =>
-        bind (@parse source), (c) ->
-            c.makeParserAndContinue createParser
-
-Parser::andThen = (parser) ->
-    @continueWith (v1) ->
-        parser.continueWith (v2) ->
-            new Parser.Succeed [v1, v2]
-
-Parser::convert = (converter) ->
-    @continueWith (v) ->
-        new Parser.Succeed converter v
-
-Parser::convertTo = (Klass) ->
-    @convert (v) -> new Klass v
+exports.Parser = Parser
+exports.Continuation = Continuation
+exports.Message = Message
