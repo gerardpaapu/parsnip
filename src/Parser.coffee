@@ -1,4 +1,6 @@
 # Calling Parser::parse(source : Port) returns a Result.
+{Result, Success, Failure} = require './Result'
+
 class Parser
     constructor: (@parse) ->
     parse: (source) ->
@@ -6,8 +8,10 @@ class Parser
 
 class Parser.Succeed extends Parser
     constructor: (@value) ->
+
     parse: (source) ->
-        new Success @value, source
+        continuation = new Continuation @value, source
+        new Success continuation
 
 class Parser.Fail extends Parser
     constructor: (@message) ->
@@ -42,19 +46,6 @@ class Continuation
     makeParserAndContinue: (makeParser) ->
         (makeParser @value).parse @source
 
-Parser::continueWith = (createParser) ->
-    new Parser (source) =>
-        bind (@parse source), (c) ->
-            c.makeParserAndContinue createParser
-
-Parser::andThen = (parser) ->
-    @continueWith (v1) ->
-        parser.continueWith (v2) ->
-            new Parser.Succeed [v1, v2]
-
-Parser::convert = (converter) ->
-    @continueWith (v) ->
-        new Parser.Succeed converter v
-
-Parser::convertTo = (Klass) ->
-    @convert (v) -> new Klass v
+exports.Parser = Parser
+exports.Message = Message
+exports.Continuation = Continuation
