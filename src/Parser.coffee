@@ -51,20 +51,6 @@ class Parser.Fail extends Parser
         message = new Message @text, source
         new Failure message
 
-class Parser.Exactly extends Parser
-    constructor: (@string) ->
-    parse: (source) ->
-        head = source.slice 0, @string.length
-
-        if head is @string
-            rest = source.slice @string.length
-            cont = new Continuation head, rest
-            new Success cont
-        else
-            reason = "Source didn't match: '#{@string}'"
-            message = new Message reason, source
-            new Failure message
-
 class Message
     # encode the reason for failure and the source location
     constructor: (@text, @source) ->
@@ -78,6 +64,10 @@ class Continuation
     # makeParserAndContinue: (makeParser: (v) -> Parser) -> Result
     makeParserAndContinue: (makeParser) ->
         (makeParser @value).parse @source
+
+do -> 
+    {addMethods} = require './From'
+    addMethods Parser
 
 exports.Parser = Parser
 exports.Message = Message
