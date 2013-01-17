@@ -8,6 +8,7 @@ Parser::parse (source) -> Result<Continuation, Message>
 which contains a Continuation or a Failure which contains
 a Message communicating why and where it failed.
 ###
+{Result, Success, Failure} = require './Result'
 
 class Parser
     constructor: (@parse) ->
@@ -39,13 +40,16 @@ class Message
 
 class Parser.Succeed extends Parser
     constructor: (@value) ->
+
     parse: (source) ->
-        new Success @value, source
+        continuation = new Continuation @value, source
+        new Success continuation
 
 class Parser.Fail extends Parser
-    constructor: (@message) ->
+    constructor: (@text) ->
     parse: (source) ->
-        new Failure @message
+        message = new Message @text, source
+        new Failure message
 
 class Parser.Exactly extends Parser
     constructor: (@string) ->
@@ -61,6 +65,20 @@ class Parser.Exactly extends Parser
             message = new Message reason, source
             new Failure message
 
+class Message
+    # encode the reason for failure and the source location
+    constructor: (@text, @source) ->
+
+class Continuation
+    # A Parser continuation contains a value
+    # derived from a source and the remainder of the
+    # source that is unparsed
+    constructor: (@value, @source) ->
+
+    # makeParserAndContinue: (makeParser: (v) -> Parser) -> Result
+    makeParserAndContinue: (makeParser) ->
+        (makeParser @value).parse @source
+
 exports.Parser = Parser
-exports.Continuation = Continuation
 exports.Message = Message
+exports.Continuation = Continuation

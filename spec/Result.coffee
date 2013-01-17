@@ -80,4 +80,4 @@ capitalize = (str) ->
             'left == right': ([left, right]) ->
                 assert.deepEqual left, right
 
-    .export(module)
+    .export module
