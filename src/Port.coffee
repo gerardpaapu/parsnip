@@ -8,43 +8,43 @@ class Port
 		if str instanceof Port
 			str
 		else
-			new Port(str)
+			new Port str
 
 	take: (n) ->
-		@slice(0, n)
+		@slice 0, n
 
 	drop: (n) ->
-		@move(n)
+		@move n
 
 	isEmpty: ->
 		@source.length <= @_index
 
 	move: (n) ->
-		new Port(@source, @_index + n)
+		new Port @source, @_index + n
 
 	index: (n) ->
 		if n < 0 then n else @_index + n
 
 	slice: (a, b) ->
 		switch arguments.length
-			when 0 then @source.slice @index(0)
-			when 1 then @source.slice @index(a)
-			else @source.slice @index(a), @index(b)
+			when 0 then @source.slice @index 0 
+			when 1 then @source.slice @index a
+			else @source.slice (@index a), (@index b)
 
 	location: ->
 		row = 0
 		column = 0
-
+		i = 0
 		while i < @_index
-			if @source[i++] is '\n'
+			if (@source.charAt i++) is '\n'
 				column = 0
 				row++
 			else
 				column++
 
-		new Location(row, column)
+		new Location row, column
 
-	toString: -> @slice(0)
+	toString: -> @slice 0 
 
 exports.Port = Port
 
