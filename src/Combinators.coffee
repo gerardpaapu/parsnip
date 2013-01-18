@@ -36,10 +36,16 @@ Or = Parser.Or = (a, b) ->
         else
             b.parse source
 
+Parser::or = (other) ->
+    Or this, other
+
 Parser::maybe = (v) ->
     Or this, (new Parser.Succeed v)
 
 Parser::onceOrMore = ->
+    cons = (a, b) ->
+        [a].concat b
+        
     @bind (head) =>
         parseRest = (do @onceOrMore).maybe []
         parseRest.bind (tail) ->
