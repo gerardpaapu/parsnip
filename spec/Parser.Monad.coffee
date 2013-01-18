@@ -105,7 +105,7 @@ assert.parsersNotEqual = (a, b) ->
             'Are equal': ([left, right]) ->
                 assert.parsersEqual left, right
 
-        'Right identity (failure): m >>= return is m':
+        'Right identity: m >>= return is m':
             topic: -> 
                 bind (Parser.from 'foo'), mreturn
 
