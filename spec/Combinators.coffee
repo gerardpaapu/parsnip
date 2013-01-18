@@ -112,7 +112,6 @@ takeBar = Parser.from 'bar'
                     (new Continuation ['foo', 'foo', 'foo'], 'rest'),
                     result.value)
 
-
             'Doesn\'t fail': (topic) ->
                 result = topic.parse 'bar'
                 assert.ok result.didSucceed
@@ -120,5 +119,58 @@ takeBar = Parser.from 'bar'
                     (new Continuation [], 'bar'),
                     result.value)
 
+        'Parser.Seq':
+            topic: ->
+                Parser.Seq ['foo', 'bar', 'baz']
+
+            'Succeeds on foobarbaz': (topic) ->
+                result = topic.parse 'foobarbazrest'
+                assert.ok result.didSucceed
+                assert.deepEqual(
+                    (new Continuation ['foo', 'bar', 'baz'], 'rest'),
+                    result.value)
+
+            'Fails on other input': (topic) ->
+                result = topic.parse 'foorest'
+                assert.ok not result.didSucceed
+                assert.deepEqual(
+                    (new Message "Source didn't match: 'bar'", new Port 'rest'),
+                    result.message)
+
+        'Parser.from Array':
+            topic: ->
+                Parser.from ['foo', 'bar', 'baz']
+
+            'Succeeds on foobarbaz': (topic) ->
+                result = topic.parse 'foobarbazrest'
+                assert.ok result.didSucceed
+                assert.deepEqual(
+                    (new Continuation ['foo', 'bar', 'baz'], 'rest'),
+                    result.value)
+
+            'Fails on other input': (topic) ->
+                result = topic.parse 'foorest'
+                assert.ok not result.didSucceed
+                assert.deepEqual(
+                    (new Message "Source didn't match: 'bar'", new Port 'rest'),
+                    result.message)
+
+        'Parser::maybe':
+            topic: ->
+                takeFoo.maybe 'failed'
+
+            'Succeeds as original': (topic) ->
+                result = topic.parse 'foorest'
+                assert.ok result.didSucceed
+                assert.deepEqual(
+                    (new Continuation 'foo', 'rest'),
+                    result.value)
+
+            'Succeeds with fallback': (topic) ->
+                result = topic.parse 'barrest'
+                assert.ok result.didSucceed
+                assert.deepEqual(
+                    (new Continuation 'failed', 'barrest'),
+                    result.value)
 
     .export module

@@ -21,11 +21,11 @@ Seq = Parser.Seq = (parsers) ->
     else
         [first, rest...] = parsers
 
-        first.bind (head) ->
+        (Parser.from first).bind (head) ->
             (Seq rest).bind (tail) ->
                 new Parser.Succeed (cons head, tail)
 
-Parser.from 'Array', Seq
+Parser.addConverter 'Array', Seq
 
 Or = Parser.Or = (a, b) ->
     new Parser (source) ->
@@ -45,7 +45,7 @@ Parser::maybe = (v) ->
 Parser::onceOrMore = ->
     cons = (a, b) ->
         [a].concat b
-        
+
     @bind (head) =>
         parseRest = (do @onceOrMore).maybe []
         parseRest.bind (tail) ->
