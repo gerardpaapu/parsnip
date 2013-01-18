@@ -2,13 +2,6 @@
 {bind, mreturn, mzero} = Parser
 
 Parser::andThen = (parser) ->
-    ###
-    andThen first second =
-        do 
-            v1 <- first
-            v2 <- second
-            return [v1, v2]
-    ###
     bind this, (v1) ->
         bind parser, (v2) ->
             mreturn [v1, v2]

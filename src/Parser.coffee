@@ -64,7 +64,7 @@ class Continuation
 ###
 mzero, return and bind implement the monad operations
 
-By implmenting these methods we can exploit
+By implementing these methods we can exploit
 existing composability patterns for monadic values
 
 * I'm using mreturn as the name for return because
