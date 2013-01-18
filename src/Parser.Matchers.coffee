@@ -21,7 +21,11 @@ Parser.addConverter 'String', (str) ->
     new Parser.Exactly str
 
 cloneRegexp = (source) ->
-    destination = new RegExp(source.source)
+    src = source.source
+    if (src.charAt 0) isnt '^'
+        src = '^' + src
+
+    destination = new RegExp src
 
     destination.global = source.global
     destination.ignoreCase = source.ignoreCase
@@ -40,18 +44,19 @@ class Parser.RegExp extends Parser
         # and we don't want that baggage
         cloneRegexp @_pattern
 
-    parse: (input) ->
-        input = Port.from input
+    parse: (source) ->
+        source = Port.from source
         pattern = do @getPattern
-        match = pattern.exec (do input.slice)
+        match = pattern.exec (do source.slice)
 
         if match?
             val = match[@index]
-            rest = input.drop match[0].length
+            rest = source.drop match[0].length
             cont = new Continuation val, rest
             new Success cont
         else
-            message = "Source didn't match: /#{pattern.source}/"
+            reason = "Source didn't match: /#{pattern.source}/"
+            message = new Message reason, source
             new Failure message
 
 
