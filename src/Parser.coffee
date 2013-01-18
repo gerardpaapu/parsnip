@@ -61,10 +61,33 @@ class Continuation
     # source that is unparsed
     constructor: (@value, @source) ->
 
-    # makeParserAndContinue: (makeParser: (v) -> Parser) -> Result
-    makeParserAndContinue: (makeParser) ->
-        (makeParser @value).parse @source
+###
+mzero, return and bind implement the monad operations
 
+By implmenting these methods we can exploit
+existing composability patterns for monadic values
+
+* I'm using mreturn as the name for return because
+  return is a keyword in javascript (and coffeescript)
+###        
+Parser.mzero = -> new Parser.Fail 'zero'
+Parser.mreturn = (v) -> new Parser.Succeed v
+Parser.bind = (m, f) ->
+    new Parser (source) =>
+        (m.parse source).bind (c) ->
+            # c is a continuation
+            parser = f c.value
+            parser.parse c.source
+
+# It's also useful to have bind as an instance method
+Parser::bind = (f) -> Parser.bind this, f
+
+
+###
+Add the static methods `Parser.from` and `Parser.addConverter`
+these allow other modules to define a conversion from
+another type to a Parser.
+###
 do -> 
     {addMethods} = require './From'
     addMethods Parser

@@ -1,8 +1,12 @@
+###
+Tests that the Monad laws hold using parser values
+and the static methods bind, mreturn, and mzero.
+###
 vows = require 'vows'
 assert = require 'assert'
-
 {Result, Success, Failure} = require '../src/Result'
-{mreturn, bind, fail} = Result
+{mreturn, bind} = Result
+fail = Result.failWithMessage
 
 # reverse: (str:String) -> Result<String>
 reverse = (str) ->
@@ -37,20 +41,20 @@ capitalize = (str) ->
                 bind (fail 'oops'), mreturn
 
             'is failure': (t) ->
-                not t.didSucceed
+                assert.ok not t.didSucceed
 
             'with the correct message': (t) ->
-                t.message is 'oops'
+                assert.equal t.message, 'oops'
 
         'Right identity (success): m >>= return is m':
             topic: -> 
                 bind (mreturn 'okay'), mreturn
 
             'is success': (t) ->
-                t.didSucceed
+                assert.ok t.didSucceed
 
             'with the correct value': (t) ->
-                t.value is 'okay'
+                assert.ok t.value is 'okay'
 
         'Associativity (success): (m >>= f) >>= g is m >>= (\\x -> f x >>= g)':
             topic: ->
