@@ -1,5 +1,3 @@
-
-
 typeString = (obj) ->
     if obj?
         full = Object::toString.call obj
