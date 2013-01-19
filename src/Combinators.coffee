@@ -55,5 +55,15 @@ Parser::zeroOrMore = ->
     any = do @onceOrMore
     any.maybe []
 
+Parser::precededBy = (prefix) ->
+    (Parser.from prefix)
+        .bind (_) => this
 
+Parser::followedBy = (suffix) ->
+    @bind (v1) ->
+        (Parser.from suffix).bind (_) ->
+            mreturn v1
+
+Parser::surroundedBy = (left, right) ->
+    (@precededBy left).followedBy right
 

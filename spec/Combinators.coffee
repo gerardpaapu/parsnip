@@ -173,4 +173,22 @@ takeBar = Parser.from 'bar'
                     (new Continuation 'failed', 'barrest'),
                     result.value)
 
+        'Parser::surroundedBy':
+            topic: ->
+                takeFoo.surroundedBy takeBar, takeBar
+
+            'Fails on original': (topic) ->
+                result = topic.parse 'foo'
+                assert.ok not result.didSucceed
+
+            'Fails with left half': (topic) ->
+                result = topic.parse 'barfoo'
+                assert.ok not result.didSucceed
+
+            'Succeeds when surrounded': (topic) ->
+                result = topic.parse 'barfoobarrest'
+                assert.deepEqual(
+                    (new Continuation 'foo', 'rest'),
+                    result.value)
+
     .export module
