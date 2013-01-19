@@ -20,8 +20,11 @@ exports.addMethods = (Klass) ->
         converters[type] = fn
 
     Klass.from = (obj) ->
-        instance = converters[typeString obj](obj)
-        unless instance instanceof Klass
-            throw new TypeError "converted value is not a instance of #{Klass}"
+        if obj instanceof Klass
+            obj
+        else 
+            instance = converters[typeString obj](obj)
+            unless instance instanceof Klass
+                throw new TypeError "converted value is not a instance of #{Klass}"
 
-        instance
+            instance
