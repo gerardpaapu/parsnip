@@ -34,5 +34,21 @@ assert = require 'assert'
                 assert.equal message.text, 'oops!'
                 assert.equal message.source, 'source'
 
+        'Parser.Item':
+            topic: ->
+                new Parser.Item
+
+            'It succeeds on non-empty input': (topic) ->
+                result = topic.parse 'poop'
+                assert.ok result.didSucceed
+
+                continuation = result.value
+                assert.equal continuation.value, 'p'
+                assert.equal continuation.source, 'oop'
+
+            'It fails on empty input': (topic) ->
+                result = topic.parse ''
+                assert.ok not result.didSucceed
+                
     .export module
 

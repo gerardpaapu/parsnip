@@ -51,6 +51,22 @@ class Parser.Fail extends Parser
         message = new Message @text, source
         new Failure message
 
+{Port} = require './Port'
+
+class Parser.Item extends Parser
+    constructor: ->
+
+    parse: (source) ->
+        source = Port.from source
+
+        if do source.isEmpty
+            new Failure 'Source empty', source
+        else
+            val = source.take 1
+            rest = source.drop 1
+            continuation = new Continuation val, rest
+            new Success continuation 
+
 class Message
     # encode the reason for failure and the source location
     constructor: (@text, @source) ->

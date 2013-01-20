@@ -8,6 +8,8 @@ require '../src/Combinators'
 
 takeFoo = Parser.from 'foo'
 takeBar = Parser.from 'bar'
+takeDigit = Parser.from /\d/
+big = (n) -> +n >= 5
 
 (vows.describe 'Testing combinators')
     .addBatch
@@ -190,5 +192,37 @@ takeBar = Parser.from 'bar'
                 assert.deepEqual(
                     (new Continuation 'foo', 'rest'),
                     result.value)
+
+        'Parser::is':
+            topic: ->
+                takeDigit.is big
+
+            'Succeeds on big digits': (topic) ->
+                [5, 6, 7, 8, 9].forEach (n) ->
+                    result = topic.parse "#{n} rest"
+                    assert.ok result.didSucceed 
+                    assert.equal result.value.value, n
+                    assert.equal (String result.value.source), ' rest'
+
+            'Fails on small digits': (topic) ->
+                [0, 1, 2, 3, 4].forEach (n) ->
+                    result = topic.parse "#{n} rest"
+                    assert.ok not result.didSucceed 
+
+        'Parser::isnt':
+            topic: ->
+                takeDigit.isnt big
+
+            'Fails on big digits': (topic) ->
+                [5, 6, 7, 8, 9].forEach (n) ->
+                    result = topic.parse "#{n} rest"
+                    assert.ok not result.didSucceed 
+
+            'Succeeds on small digits': (topic) ->
+                [0, 1, 2, 3, 4].forEach (n) ->
+                    result = topic.parse "#{n} rest"
+                    assert.ok result.didSucceed 
+                    assert.equal result.value.value, n
+                    assert.equal (String result.value.source), ' rest'
 
     .export module

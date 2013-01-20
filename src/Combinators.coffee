@@ -42,6 +42,17 @@ Parser::or = (other) ->
 Parser::maybe = (v) ->
     Or this, (new Parser.Succeed v)
 
+Any = Parser.Any = (arr) ->
+    if arr.length is 0
+        new Parser.Fail 'no candidates'
+    else if arr.length is 1
+        arr[0]
+    else if arr.length is 2
+        Or arr[0], arr[1]
+    else
+        [first, rest...] = arr
+        Or first, Any rest
+
 Parser::onceOrMore = ->
     cons = (a, b) ->
         [a].concat b
@@ -66,4 +77,26 @@ Parser::followedBy = (suffix) ->
 
 Parser::surroundedBy = (left, right) ->
     (@precededBy left).followedBy right
+
+Parser::is = (test) ->
+    @bind (v1) ->
+        if (test v1)
+            mreturn v1
+        else
+            new Parser.Fail 'Failed predicate'
+
+Parser::isnt = (test) ->
+    @is (v) -> !(test v)
+
+Parser::separatedBy = (p) ->
+    cons = (a, b) ->
+        [a].concat b
+
+    (new Parser =>
+        @bind (head) =>
+            p.bind (_) =>
+                rest = (@separatedBy p).maybe []
+                rest.bind (tail) ->
+                    mreturn (cons head, tail))
+        .maybe []
 
