@@ -88,15 +88,16 @@ Parser::is = (test) ->
 Parser::isnt = (test) ->
     @is (v) -> !(test v)
 
-Parser::separatedBy = (p) ->
-    cons = (a, b) ->
+Parser::separatedBy = (comma) ->
+    comma = Parser.from comma
+    squash = ([a, b]) ->
         [a].concat b
 
-    (new Parser =>
-        @bind (head) =>
-            p.bind (_) =>
-                rest = (@separatedBy p).maybe []
-                rest.bind (tail) ->
-                    mreturn (cons head, tail))
-        .maybe []
+    # p' := p tail
+    # tail := epsilon
+    #      := comma p
 
+    tail = (@precededBy comma)
+        .zeroOrMore()
+
+    @andThen(tail).convert(squash)
