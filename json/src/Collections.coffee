@@ -5,7 +5,7 @@ require '../../src/Combinators'
 {Any} = Parser
 {stringParser} = require './String'
 
-whitespace = (Parser.from /\s+/).maybe null
+whitespace = (Parser.from /[ \r\n\t]*/)
 
 IW = (p) ->
     (Parser.from p)
@@ -42,7 +42,7 @@ objectParser = (atom) ->
         .convert(([key, colon, value]) -> [key, value])
         .separatedBy(IW ',')
         .maybe([])
-        .surroundedBy('{', '}')
+        .surroundedBy((IW '{'), (IW '}'))
         .convert(associate)
 
 

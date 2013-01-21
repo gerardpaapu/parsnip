@@ -58,7 +58,7 @@ oneParser = (Parser.from '1').convert (_) -> 1
             'With the correct value': (result) ->
                 continuation = result.value
                 assert.deepEqual continuation.value, []
-                assert.deepEqual continuation.source, 'rest'
+                assert.deepEqual (String continuation.source), 'rest'
 
         'Parsing an Array':
             topic: ->
@@ -70,7 +70,7 @@ oneParser = (Parser.from '1').convert (_) -> 1
             'With the correct value': (result) ->
                 continuation = result.value
                 assert.deepEqual continuation.value, [1, 1, 1]
-                assert.deepEqual continuation.source, 'rest'
+                assert.deepEqual (String continuation.source), 'rest'
 
         'Parsing nested Arrays':
             topic: ->
@@ -82,7 +82,7 @@ oneParser = (Parser.from '1').convert (_) -> 1
             'With the correct value': (result) ->
                 continuation = result.value
                 assert.deepEqual continuation.value, [1, [1, 1], []]
-                assert.deepEqual continuation.source, 'rest'
+                assert.deepEqual (String continuation.source), 'rest'
 
         'Parsing something else':
             topic: ->
@@ -116,11 +116,11 @@ oneParser = (Parser.from '1').convert (_) -> 1
                 continuation = result.value
 
                 assert.deepEqual continuation.value, {poop: 1, fart: 1}
-                assert.deepEqual (String continuation.source), ' rest'
+                assert.deepEqual (String continuation.source), 'rest'
 
         'Parsing nested objects':
             topic: ->
-                src = '{"poop": {"cakes": 1}, "fart": 1, "okay": {}}rest'
+                src = '{"poop": {"cakes": \r\t1}\t, "fart"\n: 1, "okay": {}}  rest'
                 (objectParser oneParser).parse src
 
             'It succeeds': (result) ->
