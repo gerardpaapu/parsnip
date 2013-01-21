@@ -1,8 +1,6 @@
 vows = require 'vows'
 assert = require 'assert'
-{Parser} = require '../../src/Parser'
-require '../../src/Parser.Matchers'
-require '../../src/Combinators'
+{Parser} = require './lib/Parser'
 
 {
     value,

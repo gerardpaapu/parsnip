@@ -2,7 +2,7 @@ vows = require 'vows'
 assert = require 'assert'
 
 numberParser = (require '../src/Number').numberParser
-{Message, Continuation} = require '../../src/Parser'
+{Message, Continuation} = require './lib/Parser'
 
 (vows.describe 'Parsing Numbers')
     .addBatch

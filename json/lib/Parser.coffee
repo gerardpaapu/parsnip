@@ -1,8 +1,8 @@
-{Parser, Continuation, Message} = require './Parser'
-require './Parser.Matchers'
-require './Combinators'
-{Port} = require './Port'
-{Result, Success, Failure} = require './Result'
+{
+    Parser, Continuation, Message,
+    Result, Success, Failure,
+    Port
+} = require '../../src/index'
 
 exports.Parser = Parser
 exports.Continuation = Continuation

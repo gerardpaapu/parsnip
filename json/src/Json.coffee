@@ -1,7 +1,4 @@
-{Parser} = require '../../src/Parser'
-{Port} = require '../../src/Port'
-require '../../src/Parser.Matchers'
-require '../../src/Combinators'
+{Parser, Port} = require './lib/Parser'
 
 {Any} = Parser
 

@@ -1,6 +1,4 @@
-{Parser} = require '../../src/Parser'
-require '../../src/Parser.Matchers'
-require '../../src/Combinators'
+{Parser} = require './lib/Parser'
 {Any} = Parser
 
 exports.keywordParser = do ->
