@@ -1,10 +1,8 @@
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser, Continuation, Message} = require '../src/Parser'
+{Parser, Continuation, Message} = require '../src/index'
 {Port} = require '../src/Port'
-require '../src/Parser.Matchers'
-require '../src/Combinators'
 
 takeFoo = Parser.from 'foo'
 takeBar = Parser.from 'bar'
@@ -192,6 +190,34 @@ big = (n) -> +n >= 5
                 assert.deepEqual(
                     (new Continuation 'foo', 'rest'),
                     result.value)
+
+        'Parser::separatedBy':
+            topic: ->
+                takeFoo.separatedBy takeBar
+
+            'Succeeds on original': (topic) ->
+                result = topic.parse 'foo'
+                assert.ok result.didSucceed
+                cont = result.value
+                assert.deepEqual cont.value, ['foo']
+
+            'Succeeds with a comma': (topic) ->
+                result = topic.parse 'foobarfoorest'
+                assert.ok result.didSucceed
+                cont = result.value
+                assert.deepEqual cont.value, ['foo', 'foo']
+                assert.equal (String cont.source), 'rest'
+
+            'Excludes trailing comma': (topic) ->
+                result = topic.parse 'foobarfoobarrest'
+                assert.ok result.didSucceed
+                cont = result.value
+                assert.deepEqual cont.value, ['foo', 'foo']
+                assert.equal (String cont.source), 'barrest'
+
+            'Fails on just the comma': (topic) ->
+                result = topic.parse 'bar'
+                assert.ok not result.didSucceed
 
         'Parser::is':
             topic: ->

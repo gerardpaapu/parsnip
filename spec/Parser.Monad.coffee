@@ -7,12 +7,8 @@ and the static methods bind, mreturn, and mzero.
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser} = require '../src/Parser'
+{Parser} = require '../src/index'
 {mzero, mreturn, bind} = Parser
-
-# bringing in Parser.Exactly to create
-# some parsers that are easy to use in tests
-require '../src/Parser.Matchers'
 
 # reverse: (str:String) -> Result<String>
 reverse = (str) ->

@@ -1,7 +1,7 @@
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser} = require '../src/Parser'
+{Parser} = require '../src/index'
 
 (vows.describe 'Parser class core functionality')
     .addBatch

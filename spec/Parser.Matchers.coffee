@@ -1,8 +1,7 @@
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser} = require '../src/Parser'
-require '../src/Parser.Matchers'
+{Parser} = require '../src/index'
 
 (vows.describe 'Parser: Simple Matchers')
     .addBatch
