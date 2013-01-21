@@ -59,6 +59,8 @@ stringParser = do ->
 
     characterParser()
         .zeroOrMore()
-        .surroundedBy quote, quote
+        .surroundedBy(quote, quote)
+        .convert (arr) ->
+            arr.join ''
 
 exports.stringParser = stringParser

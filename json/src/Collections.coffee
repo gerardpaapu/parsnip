@@ -4,11 +4,12 @@ require '../../src/Combinators'
 
 {Any} = Parser
 {stringParser} = require './String'
-whitespace = (Parser.from /\w+/).maybe null
+
+whitespace = (Parser.from /\s+/).maybe null
 
 IW = (p) ->
     (Parser.from p)
-        .surroundedBy whitespace, whitespace
+        .surroundedBy(whitespace, whitespace)
 
 delay = (makeParser) ->
     parser = null
@@ -24,15 +25,29 @@ value = (atom) ->
 
 arrayParser = (atom) ->
     (value atom)
-        .separatedBy (IW ',')
-        .surroundedBy (IW '['), (IW ')')
+        .separatedBy(IW ',')
+        .maybe([])
+        .surroundedBy((IW '['), (IW ']'))
+
+associate = (arr) ->
+    result = {}
+    for [k, v] in arr
+        result[k] = v
+
+    result
+
 
 objectParser = (atom) ->
     (Parser.from [stringParser, (IW ':'), (value atom)])
-        .separatedBy IW ','
-        .surroundedBy '{', '}'
+        .convert(([key, colon, value]) -> [key, value])
+        .separatedBy(IW ',')
+        .maybe([])
+        .surroundedBy('{', '}')
+        .convert(associate)
+
 
 exports.arrayParser = arrayParser
 exports.objectParser = objectParser
 exports.value = objectParser
+exports.ignoreWhitespace = IW
 

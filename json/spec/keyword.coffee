@@ -17,6 +17,7 @@ assert = require 'assert'
 
             'Leaving the remainder for the next parse': (t) ->
                 assert.equal t.value.source, ' rest'
+
         'parsing true':
             topic: ->
                 keywordParser.parse 'true rest'
