@@ -9,7 +9,7 @@ class Parser.Exactly extends Parser
         head = source.slice 0, @string.length
 
         if head is @string
-            rest = source.slice @string.length
+            rest = source.move @string.length
             cont = new Continuation head, rest
             new Success cont
         else
@@ -51,7 +51,7 @@ class Parser.RegExp extends Parser
 
         if match?
             val = match[@index]
-            rest = source.drop match[0].length
+            rest = source.move match[0].length
             cont = new Continuation val, rest
             new Success cont
         else

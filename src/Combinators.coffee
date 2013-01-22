@@ -1,5 +1,7 @@
-{Parser} = require './Core'
+{Parser, Message, Continuation} = require './Core'
+{Success, Failure, Result} = require './Result'
 {bind, mreturn, mzero} = Parser
+{Port, Location} = require './Port'
 
 Parser::andThen = (parser) ->
     bind this, (v1) ->
@@ -101,3 +103,16 @@ Parser::separatedBy = (comma) ->
         .zeroOrMore()
 
     @andThen(tail).convert(squash)
+
+Parser::withLocation = (fn) ->
+    new Parser (_source) =>
+        _source = Port.from _source
+        start = _source.getLocation()
+
+        (@parse _source).bind (cont) ->
+            {source, value} = cont
+            end = source.getLocation()
+            _value = fn value, start, end
+
+            next = new Continuation _value, source
+            new Success next

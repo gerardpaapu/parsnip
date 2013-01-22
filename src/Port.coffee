@@ -31,7 +31,7 @@ class Port
 			when 1 then @source.slice @index a
 			else @source.slice (@index a), (@index b)
 
-	location: ->
+	getLocation: ->
 		row = 0
 		column = 0
 		i = 0

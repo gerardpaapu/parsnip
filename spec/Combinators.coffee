@@ -1,7 +1,7 @@
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser, Continuation, Message, Port} = require '../src/Parser'
+{Parser, Continuation, Message, Port, Location} = require '../src/Parser'
 
 takeFoo = Parser.from 'foo'
 takeBar = Parser.from 'bar'
@@ -20,8 +20,9 @@ big = (n) -> +n >= 5
 
             'With the correct value': (topic) ->
                 result = topic.parse 'foobarrest'
+                location = (Port.from 'foobarrest').move 6
                 assert.deepEqual(
-                    (new Continuation ['foo', 'bar'], 'rest'),
+                    (new Continuation ['foo', 'bar'], location),
                     result.value)
 
             'Fails on \'foosomething\'': (topic) ->
@@ -38,8 +39,9 @@ big = (n) -> +n >= 5
 
             'With the correct value': (topic) ->
                 result = topic.parse 'foorest'
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Continuation 'text', 'rest'),
+                    (new Continuation 'text', rest),
                     result.value)
 
             'Fails as on other text': (topic) ->
@@ -53,15 +55,17 @@ big = (n) -> +n >= 5
             'Succeeds as with the left parser': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Continuation 'foo', 'rest'),
+                    (new Continuation 'foo', rest),
                     result.value)
 
             'Succeeds as with the right parser': (topic) ->
                 result = topic.parse 'barrest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'barrest').move 3
                 assert.deepEqual(
-                    (new Continuation 'bar', 'rest'),
+                    (new Continuation 'bar', rest),
                     result.value)
 
             'Fails with other input': (topic) ->
@@ -74,15 +78,17 @@ big = (n) -> +n >= 5
             'Succeeds as the original': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Continuation ['foo'], 'rest'),
+                    (new Continuation ['foo'], rest),
                     result.value)
 
             'Succeeds multiple times': (topic) ->
                 result = topic.parse 'foofoofoorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foofoofoorest').move 9
                 assert.deepEqual(
-                    (new Continuation ['foo', 'foo', 'foo'], 'rest'),
+                    (new Continuation ['foo', 'foo', 'foo'], rest),
                     result.value)
 
 
@@ -100,22 +106,24 @@ big = (n) -> +n >= 5
             'Succeeds as the original': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Continuation ['foo'], 'rest'),
+                    (new Continuation ['foo'], rest),
                     result.value)
 
             'Succeeds multiple times': (topic) ->
                 result = topic.parse 'foofoofoorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foofoofoorest').move 9
                 assert.deepEqual(
-                    (new Continuation ['foo', 'foo', 'foo'], 'rest'),
+                    (new Continuation ['foo', 'foo', 'foo'], rest),
                     result.value)
 
             'Doesn\'t fail': (topic) ->
-                result = topic.parse 'bar'
+                result = topic.parse (Port.from 'bar')
                 assert.ok result.didSucceed
                 assert.deepEqual(
-                    (new Continuation [], 'bar'),
+                    (new Continuation [], Port.from 'bar'),
                     result.value)
 
         'Parser.Seq':
@@ -125,15 +133,17 @@ big = (n) -> +n >= 5
             'Succeeds on foobarbaz': (topic) ->
                 result = topic.parse 'foobarbazrest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foobarbazrest').move 9
                 assert.deepEqual(
-                    (new Continuation ['foo', 'bar', 'baz'], 'rest'),
+                    (new Continuation ['foo', 'bar', 'baz'], rest),
                     result.value)
 
             'Fails on other input': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok not result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Message "Source didn't match: 'bar'", new Port 'rest'),
+                    (new Message "Source didn't match: 'bar'", rest),
                     result.message)
 
         'Parser.from Array':
@@ -143,15 +153,17 @@ big = (n) -> +n >= 5
             'Succeeds on foobarbaz': (topic) ->
                 result = topic.parse 'foobarbazrest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foobarbazrest').move 9
                 assert.deepEqual(
-                    (new Continuation ['foo', 'bar', 'baz'], 'rest'),
+                    (new Continuation ['foo', 'bar', 'baz'], rest),
                     result.value)
 
             'Fails on other input': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok not result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Message "Source didn't match: 'bar'", new Port 'rest'),
+                    (new Message "Source didn't match: 'bar'", rest),
                     result.message)
 
         'Parser::maybe':
@@ -161,8 +173,9 @@ big = (n) -> +n >= 5
             'Succeeds as original': (topic) ->
                 result = topic.parse 'foorest'
                 assert.ok result.didSucceed
+                rest = (Port.from 'foorest').move 3
                 assert.deepEqual(
-                    (new Continuation 'foo', 'rest'),
+                    (new Continuation 'foo', rest),
                     result.value)
 
             'Succeeds with fallback': (topic) ->
@@ -186,8 +199,9 @@ big = (n) -> +n >= 5
 
             'Succeeds when surrounded': (topic) ->
                 result = topic.parse 'barfoobarrest'
+                rest = (Port.from 'barfoobarrest').move 9
                 assert.deepEqual(
-                    (new Continuation 'foo', 'rest'),
+                    (new Continuation 'foo', rest),
                     result.value)
 
         'Parser::separatedBy':
@@ -249,5 +263,26 @@ big = (n) -> +n >= 5
                     assert.ok result.didSucceed 
                     assert.equal result.value.value, n
                     assert.equal (String result.value.source), ' rest'
+
+        'Parser::withLocation':
+            topic: ->
+                _takeBar = takeBar.withLocation (v, s, e) ->
+                    { value: v, start: s, end: e }
+
+            'Is a parser': (topic) ->
+                assert.ok topic instanceof Parser
+
+            'Succeeds': (topic) ->
+                result = topic.parse 'barrest'
+                assert.ok result.didSucceed 
+
+            'With the correct values': (topic) ->
+                result = topic.parse 'barrest'
+                cont = result.value
+                start = new Location 0, 0
+                end = new Location 0, 3
+
+                assert.deepEqual cont.value, {value: 'bar', start: start, end: end}
+                assert.equal (String cont.source), 'rest'
 
     .export module

@@ -1,7 +1,7 @@
 {Parser, Continuation, Message} = require './Core'
 require './Matchers'
 require './Combinators'
-{Port} = require './Port'
+{Port, Location} = require './Port'
 {Result, Success, Failure} = require './Result'
 
 exports.Parser = Parser
@@ -13,3 +13,4 @@ exports.Success = Success
 exports.Failure = Failure
 
 exports.Port = Port
+exports.Location = Location
