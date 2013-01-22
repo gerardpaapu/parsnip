@@ -1,8 +1,7 @@
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser, Continuation, Message} = require '../src/index'
-{Port} = require '../src/Port'
+{Parser, Continuation, Message, Port} = require '../src/index'
 
 takeFoo = Parser.from 'foo'
 takeBar = Parser.from 'bar'
