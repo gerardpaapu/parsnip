@@ -1,6 +1,6 @@
 vows = require 'vows'
 assert = require 'assert'
-{Parser} = require './lib/Parser'
+{Parser} = require '../lib/Parser'
 
 {
     value,

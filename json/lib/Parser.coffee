@@ -2,7 +2,7 @@
     Parser, Continuation, Message,
     Result, Success, Failure,
     Port
-} = require '../../src/index'
+} = require '../../src/Parser'
 
 exports.Parser = Parser
 exports.Continuation = Continuation

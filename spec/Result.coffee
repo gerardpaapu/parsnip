@@ -4,7 +4,7 @@ and the static methods bind, mreturn, and mzero.
 ###
 vows = require 'vows'
 assert = require 'assert'
-{Result, Success, Failure} = require '../src/Result'
+{Result, Success, Failure} = require '../src/Parser'
 {mreturn, bind} = Result
 fail = Result.failWithMessage
 

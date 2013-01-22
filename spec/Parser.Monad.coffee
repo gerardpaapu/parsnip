@@ -7,7 +7,7 @@ and the static methods bind, mreturn, and mzero.
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser} = require '../src/index'
+{Parser} = require '../src/Parser'
 {mzero, mreturn, bind} = Parser
 
 # reverse: (str:String) -> Result<String>

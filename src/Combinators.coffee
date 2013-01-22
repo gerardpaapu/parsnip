@@ -1,4 +1,4 @@
-{Parser} = require './Parser'
+{Parser} = require './Core'
 {bind, mreturn, mzero} = Parser
 
 Parser::andThen = (parser) ->

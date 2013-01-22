@@ -1,4 +1,4 @@
-{Parser, Continuation, Message} = require './Parser'
+{Parser, Continuation, Message} = require './Core'
 {Result, Success, Failure} = require './Result'
 {Port} = require './Port'
 
