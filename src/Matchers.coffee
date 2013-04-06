@@ -25,11 +25,13 @@ cloneRegexp = (source) ->
     if (src.charAt 0) isnt '^'
         src = '^' + src
 
-    destination = new RegExp src
+    flags = [
+        if source.global then 'g' else '',
+        if source.ignoreCase then 'i' else '',
+        if source.multiline then 'm' else '',
+    ].join('')
 
-    destination.global = source.global
-    destination.ignoreCase = source.ignoreCase
-    destination.multiline = source.multiline
+    destination = new RegExp src, flags
 
     destination
 
