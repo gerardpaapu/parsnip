@@ -1,0 +1,10 @@
+var Parser = (function () {
+    'use strict';
+    var modules = {};
+    function require(name) {
+        if (!(name in modules)) {
+            throw new Error('Module not found: ' + name);
+        }
+        return modules[name];
+    }
+
