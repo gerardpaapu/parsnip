@@ -17,11 +17,16 @@ build/all.js: $(JS_FILES) src/prefix.txt src/suffix.txt
 	cat $(JS_FILES) >> $@
 	cat src/suffix.txt >> $@
 
-all: build/all.js
+build/%.min.js: build/%.js
+	uglifyjs $< > $@
+
+default: build/all.js
+	
+minify: build/all.min.js
 
 test:
 	vows --spec spec/* json/spec/*
 
 clean:
-	-rm $(JS_FILES) build/all.js
+	-rm $(JS_FILES) build/all.js build/all.min.js
 	-rm -r build
