@@ -32,3 +32,10 @@ Documentation
 
 There will be some soon. The source is commented and the tests describe the 
 intent of most methods.
+
+
+License
+-------
+
+This software is free to use and distribute under the MIT License as specified
+in the file LICENSE.txt
