@@ -17,7 +17,7 @@ parseJSON = (source) ->
        throw new SyntaxError "Invalid JSON"
 
     continuation = result.value
-    unless continuation.source.isEmpty is 0
+    unless do continuation.source.isEmpty
         throw new SyntaxError "Trailing Characters"
 
     continuation.value
