@@ -116,3 +116,25 @@ Parser::withLocation = (fn) ->
 
             next = new Continuation _value, source
             new Success next
+
+Parser::tag = (tag_str) ->
+    @withLocation (value, start, end) ->
+        type: tag_str
+        value: value
+        start: start
+        end: end
+
+Parser::toFunction = (opts) ->
+    (source) =>
+        opts ?= {}
+        result = @parse(source)
+        if result.didSucceed
+            cont = result.value
+            complete = do cont.source.isEmpty
+
+            if opts.noTrailing and !complete
+               throw new Error "Trailing Characters #{cont.source}"
+
+            cont.value
+        else
+            throw new SyntaxError result.message
