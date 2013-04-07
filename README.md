@@ -5,16 +5,20 @@ This library is intended to make it easy to write correct
 parsers for the javascript platform, by composing simple and
 correct parsers into larger parsers.
 
-    var readDigits = Parsnip.Parser
-        .from(/\d+/).convert(Number)
-        .separatedBy(' ')
-        .surroundedBy('{', '}')
-        .toFunction();
+```javascript
+var readDigits = Parsnip.Parser
+    .from(/\d+/).convert(Number)
+    .separatedBy(' ')
+    .surroundedBy('{', '}')
+    .toFunction();
 
-    var result = readDigits('{1 546 233}');
+var result = readDigits('{1 546 233}');
 
-    console.log(result); 
-    // [1, 546, 233]
+console.log(result); 
+// [1, 546, 233]
+
+readDigits('{324324 33'); //!!! Syntax Error
+```
 
 For a more involved example, see the JSON parser in `json/src`.
 
