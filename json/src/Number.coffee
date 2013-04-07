@@ -1,4 +1,4 @@
-{Parser} = require '../lib/Parser'
+{Parser} = require '../lib/Parsnip'
 
 pattern = ///
     (-)?  # optional leading sign

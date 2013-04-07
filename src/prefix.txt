@@ -1,4 +1,4 @@
-var Parser = (function () {
+var Parsnip = (function () {
     'use strict';
     var modules = {};
     function require(name) {

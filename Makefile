@@ -1,5 +1,7 @@
 COFFEE=coffee
 
+ALL_JS=parsnip
+
 COFFEE_FILES=$(addprefix src/, Port.coffee From.coffee Result.coffee Core.coffee\
 	Matchers.coffee Combinators.coffee Parser.coffee)
 
@@ -12,7 +14,7 @@ build/%.js: src/%.coffee
 	$(COFFEE) --bare -p $< >> $@
 	echo "}.call(null, modules['./"$(basename $(notdir $@))"'] = {}));" >> $@
 
-build/all.js: $(JS_FILES) src/prefix.txt src/suffix.txt
+build/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
 	cat src/prefix.txt > $@
 	cat $(JS_FILES) >> $@
 	cat src/suffix.txt >> $@
@@ -20,13 +22,13 @@ build/all.js: $(JS_FILES) src/prefix.txt src/suffix.txt
 build/%.min.js: build/%.js
 	uglifyjs $< > $@
 
-default: build/all.js
+default: build/$(ALL_JS).js
 	
-minify: build/all.min.js
+minify: build/$(ALL_JS).min.js
 
 test:
 	vows --spec spec/* json/spec/*
 
 clean:
-	-rm $(JS_FILES) build/all.js build/all.min.js
+	-rm build/*
 	-rm -r build

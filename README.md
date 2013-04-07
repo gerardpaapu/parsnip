@@ -1,4 +1,4 @@
-Parser - Monad parsing combinators for javascript
+Parsnip - Monadic parsing combinators for javascript
 -------------------------------------------------
 
 This library is intended to make it easy to write correct 

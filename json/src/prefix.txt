@@ -1,7 +1,7 @@
-Parser.Json = (function () {
+Parsnip.Json = (function () {
     'use strict';
     var modules = {
-        '../lib/Parser': Parser
+        '../lib/Parsnip': Parsnip
     };
     function require(name) {
         if (!(name in modules)) {
