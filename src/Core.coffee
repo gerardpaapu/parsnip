@@ -98,6 +98,12 @@ Parser.bind = (m, f) ->
 # It's also useful to have bind as an instance method
 Parser::bind = (f) -> Parser.bind this, f
 
+Parser.lazy = (makeParser) ->
+    parser = null
+
+    new Parser (input) ->
+        parser ?= do makeParser
+        parser.parse input
 
 ###
 Add the static methods `Parser.from` and `Parser.addConverter`
