@@ -1,6 +1,6 @@
 {Parser} = require '../lib/Parsnip'
 
-{Any, lazy} = Parser
+{Any, lazy, Seq} = Parser
 {stringParser} = require './String'
 
 whitespace = (Parser.from /[ \r\n\t]*/)
@@ -27,7 +27,7 @@ collectionsOf = (atom) ->
             .surroundedBy((IW '['), (IW ']'))
 
     objectParser = lazy ->
-        (Parser.from [stringParser, (IW ':'), value])
+        (Seq [stringParser, (IW ':'), value])
             .convert(([key, colon, value]) -> [key, value])
             .separatedBy(IW ',')
             .maybe([])
