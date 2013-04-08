@@ -19,6 +19,8 @@ beget = do ->
 class Symbol
     constructor: (@value) ->
 
+macros = {}
+
 primitives =
     'lambda': ([args, body...], $env) ->
         ->
@@ -84,8 +86,6 @@ primitives =
         else
             method
 
-macros = {}
-
 default_env = 
     '+': (args...) ->
         total = 0
@@ -100,6 +100,9 @@ default_env =
             product *= i
 
         product
+
+    '=': (a, b) ->
+        a is b
 
 evaluate = (v, env=default_env) ->
     switch type v
@@ -133,19 +136,27 @@ parseExpression = do ->
     {Any, lazy} = Parser
     JSON = require '../json/src/Json'
 
-    symbol = (Parser.from /[\*\+\._a-z][\*\+\._a-z0-9]*/i).convertTo Symbol
+    symbol = (Parser.from /[\*\+\._a-z][\*\+\._a-z0-9]*/i)
+        .convertTo Symbol
 
     atom = Any [JSON.Number, JSON.String, symbol]
 
-    whitespace = /[ \r\n\t]+/m
+    whitespace = (Any [' ', '\r', '\n', '\t']).onceOrMore()
+    comment = /;.*(\n|\r|$)/
+
+    nontoken = (Any [whitespace, comment]).zeroOrMore()
+    IW = (p) -> (Parser.from p).surroundedBy(nontoken, nontoken)
     
     expression = Parser.lazy -> 
         Any [atom, list, quote]
 
     list = Parser.lazy ->
+        open = (Parser.from '(').followedBy(nontoken)
+        close = (Parser.from ')').precededBy(nontoken)
+        
         expression
-            .separatedBy(' ')
-            .surroundedBy('(', ')')
+            .separatedBy(nontoken)
+            .surroundedBy(open, close)
 
     quote = Parser.lazy ->
         expression
@@ -153,7 +164,9 @@ parseExpression = do ->
             .convert((expr) ->
                 [new Symbol 'quote'].concat(expr))
 
-    expression.toFunction()
+    expression
+        .surroundedBy(nontoken, nontoken)
+        .toFunction()
 
 evalString = (source) ->
     tree = parseExpression source
@@ -161,4 +174,10 @@ evalString = (source) ->
 
 console.log (evalString '\'(a list of symbols)')
 console.log (evalString '((lambda (a) (* a a)) 5)')
-console.log (evalString '((lambda (str) (. str slice 1 -1)) \n"{unwrap me}")')
+console.log (evalString """
+    ((lambda (str)
+        ;; remove the first and
+        ;; last character of a string
+        (. str slice 1 -1)) 
+     "{unwrap me}")
+    """)
