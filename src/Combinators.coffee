@@ -30,6 +30,9 @@ Seq = Parser.Seq = (parsers) ->
 Parser.addConverter 'Array', Seq
 
 Or = Parser.Or = (a, b) ->
+    a = Parser.from a
+    b = Parser.from b
+    
     new Parser (source) ->
         result = a.parse source
 
@@ -48,7 +51,7 @@ Any = Parser.Any = (arr) ->
     if arr.length is 0
         new Parser.Fail 'no candidates'
     else if arr.length is 1
-        arr[0]
+        Parser.from arr[0]
     else if arr.length is 2
         Or arr[0], arr[1]
     else
