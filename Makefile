@@ -7,6 +7,8 @@ COFFEE_FILES=$(addprefix src/, Port.coffee From.coffee Result.coffee Core.coffee
 
 JS_FILES=$(patsubst src/%.coffee, build/%.js, $(COFFEE_FILES))
 
+all: browser minify
+	cd json; make
 
 build/%.js: src/%.coffee
 	mkdir -p build
@@ -14,17 +16,18 @@ build/%.js: src/%.coffee
 	$(COFFEE) --bare -p $< >> $@
 	echo "}.call(null, modules['./"$(basename $(notdir $@))"'] = {}));" >> $@
 
-build/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
+dist/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
+	mkdir -p dist
 	cat src/prefix.txt > $@
 	cat $(JS_FILES) >> $@
 	cat src/suffix.txt >> $@
 
-build/%.min.js: build/%.js
+%.min.js: %.js
 	uglifyjs $< > $@
 
-default: build/$(ALL_JS).js
-	
-minify: build/$(ALL_JS).min.js
+browser: dist/$(ALL_JS).js
+
+minify: dist/$(ALL_JS).min.js
 
 test:
 	vows --spec spec/* json/spec/*
@@ -32,3 +35,5 @@ test:
 clean:
 	-rm build/*
 	-rm -r build
+	-rm dist/*
+	-rm -r dist
