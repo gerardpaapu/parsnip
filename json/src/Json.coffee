@@ -1,28 +1,19 @@
 {Parser, Port} = require '../lib/Parsnip'
 
-{Any} = Parser
+{Any, lazy} = Parser
 
 {stringParser} = require './String'
 {numberParser} = require './Number'
 {keywordParser} = require './keyword'
-{value} = require './Collections'
+{collectionOf} = require './Collections'
 
-JSONParser = do ->
-    value Any [stringParser, numberParser, keywordParser]
+atom = (Any [stringParser, numberParser, keywordParser])
+{value, arrayParser, objectParser} = collectionOf atom
 
-parseJSON = (source) ->
-    source = Port.from source
-    result = JSONParser.parse source
-    unless result.didSucceed
-       throw new SyntaxError "Invalid JSON"
+exports.JSONParser = value
+exports.parseJSON = value.toFunction()
 
-    continuation = result.value
-    unless do continuation.source.isEmpty
-        throw new SyntaxError "Trailing Characters"
-
-    continuation.value
-
-exports.parseJSON = parseJSON
-exports.JSONParser = JSONParser
-
-
+exports.Number = numberParser
+exports.String = stringParser
+exports.Array = arrayParser
+exports.Object = objectParser

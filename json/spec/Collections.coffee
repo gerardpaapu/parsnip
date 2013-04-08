@@ -3,9 +3,7 @@ assert = require 'assert'
 {Parser} = require '../lib/Parsnip'
 
 {
-    value,
-    arrayParser,
-    objectParser,
+    collectionsOf,
     ignoreWhitespace
 } = require '../src/Collections'
 
@@ -48,7 +46,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
     .addBatch
         'Parsing an empty Array':
             topic: ->
-                (arrayParser oneParser).parse '[]rest'
+                {arrayParser} = collectionsOf oneParser
+                arrayParser.parse '[]rest'
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed
@@ -60,7 +59,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
 
         'Parsing an Array':
             topic: ->
-                (arrayParser oneParser).parse '[1, 1, 1]rest'
+                {arrayParser} = collectionsOf oneParser
+                arrayParser.parse '[1, 1, 1]rest'
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed
@@ -72,7 +72,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
 
         'Parsing nested Arrays':
             topic: ->
-                (arrayParser oneParser).parse '[1, [1, 1], []]rest'
+                {arrayParser} = collectionsOf oneParser
+                arrayParser.parse '[1, [1, 1], []]rest'
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed
@@ -84,7 +85,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
 
         'Parsing something else':
             topic: ->
-                (arrayParser oneParser).parse '{}'
+                {arrayParser} = collectionsOf oneParser
+                arrayParser.parse '{}'
 
             'It fails': (result) ->
                 assert.ok not result.didSucceed
@@ -92,7 +94,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
     .addBatch
         'Parsing an empty Object':
             topic: ->
-                (objectParser oneParser).parse '{}rest'
+                {objectParser} = collectionsOf oneParser
+                objectParser.parse '{}rest'
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed
@@ -105,7 +108,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
 
         'Parsing a non empty Object':
             topic: ->
-                (objectParser oneParser).parse '{"poop": 1, "fart": 1} rest'
+                {objectParser} = collectionsOf oneParser
+                objectParser.parse '{"poop": 1, "fart": 1} rest'
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed
@@ -119,7 +123,8 @@ oneParser = (Parser.from '1').convert (_) -> 1
         'Parsing nested objects':
             topic: ->
                 src = '{"poop": {"cakes": \r\t1}\t, "fart"\n: 1, "okay": {}}  rest'
-                (objectParser oneParser).parse src
+                {objectParser} = collectionsOf oneParser
+                objectParser.parse src
 
             'It succeeds': (result) ->
                 assert.ok result.didSucceed

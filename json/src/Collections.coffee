@@ -1,6 +1,6 @@
 {Parser} = require '../lib/Parsnip'
 
-{Any} = Parser
+{Any, lazy} = Parser
 {stringParser} = require './String'
 
 whitespace = (Parser.from /[ \r\n\t]*/)
@@ -9,24 +9,6 @@ IW = (p) ->
     (Parser.from p)
         .surroundedBy(whitespace, whitespace)
 
-delay = (makeParser) ->
-    parser = null
-
-    new Parser (input) ->
-        parser ?= do makeParser
-        parser.parse input
-
-value = (atom) ->
-    IW Any [ atom,
-             (delay -> arrayParser atom),
-             (delay -> objectParser atom)]
-
-arrayParser = (atom) ->
-    (value atom)
-        .separatedBy(IW ',')
-        .maybe([])
-        .surroundedBy((IW '['), (IW ']'))
-
 associate = (arr) ->
     result = {}
     for [k, v] in arr
@@ -34,18 +16,25 @@ associate = (arr) ->
 
     result
 
+collectionsOf = (atom) ->
+    value = lazy ->
+        IW (Any [atom, arrayParser, objectParser])
 
-objectParser = (atom) ->
-    (Parser.from [stringParser, (IW ':'), (value atom)])
-        .convert(([key, colon, value]) -> [key, value])
-        .separatedBy(IW ',')
-        .maybe([])
-        .surroundedBy((IW '{'), (IW '}'))
-        .convert(associate)
+    arrayParser = lazy ->
+        value
+            .separatedBy(IW ',')
+            .maybe([])
+            .surroundedBy((IW '['), (IW ']'))
 
+    objectParser = lazy ->
+        (Parser.from [stringParser, (IW ':'), value])
+            .convert(([key, colon, value]) -> [key, value])
+            .separatedBy(IW ',')
+            .maybe([])
+            .surroundedBy((IW '{'), (IW '}'))
+            .convert(associate)
 
-exports.arrayParser = arrayParser
-exports.objectParser = objectParser
-exports.value = objectParser
+    {value, objectParser, arrayParser} 
+
+exports.collectionsOf = collectionsOf
 exports.ignoreWhitespace = IW
-
