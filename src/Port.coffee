@@ -35,6 +35,7 @@ class Port
 		row = 0
 		column = 0
 		i = 0
+
 		while i < @_index
 			if (@source.charAt i++) is '\n'
 				column = 0
@@ -50,5 +51,7 @@ exports.Port = Port
 
 class Location
 	constructor: (@row, @column) ->
+	toString: ->
+		"row: #{@row}, col: #{@column}"
 
 exports.Location = Location

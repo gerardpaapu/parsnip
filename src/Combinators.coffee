@@ -140,4 +140,6 @@ Parser::toFunction = (opts) ->
 
             cont.value
         else
-            throw new SyntaxError result.message
+            text = result.message.text
+            loc = result.message.source.getLocation()
+            throw new SyntaxError "#{text} #{loc}"
