@@ -285,4 +285,46 @@ big = (n) -> +n >= 5
                 assert.deepEqual cont.value, {value: 'bar', start: start, end: end}
                 assert.equal (String cont.source), 'rest'
 
+        'Parser::dontConsume':
+            topic: ->
+                p = new Parser.Exactly 'foo'
+                do p.dontConsume
+
+            'Is a parser': (topic) ->
+                assert.ok topic instanceof Parser
+
+            'Succeeds': (topic) ->
+                result = topic.parse 'foorest'
+                assert.ok result.didSucceed 
+
+            'With the correct values': (topic) ->
+                result = topic.parse 'foorest'
+                cont = result.value
+
+                assert.equal cont.value, 'foo'
+                assert.equal (String cont.source), 'foorest'
+
+        'Parser::lookAhead':
+            topic: ->
+                p = new Parser.Exactly 'foo'
+                p.lookAhead 'bar'
+
+            'Is a parser': (topic) ->
+                assert.ok topic instanceof Parser
+
+            'Succeeds': (topic) ->
+                result = topic.parse 'foobarrest'
+                assert.ok result.didSucceed 
+
+            'With the correct values': (topic) ->
+                result = topic.parse 'foobarrest'
+                cont = result.value
+
+                assert.equal cont.value, 'foo'
+                assert.equal (String cont.source), 'barrest'
+
+            'Fails': (topic) ->
+                result = topic.parse 'foorest'
+                assert.ok !result.didSucceed
+
     .export module

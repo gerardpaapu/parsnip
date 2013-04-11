@@ -143,3 +143,12 @@ Parser::toFunction = (opts) ->
             text = result.message.text
             loc = result.message.source.getLocation()
             throw new SyntaxError "#{text} #{loc}"
+
+Parser::dontConsume = ->
+    new Parser (source) =>
+        (@parse source).bind (c) ->
+            new Success (new Continuation c.value, source)
+
+Parser::lookAhead = (p) ->
+    p = Parser.from p
+    @followedBy (do p.dontConsume)
