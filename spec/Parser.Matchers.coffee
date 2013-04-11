@@ -63,4 +63,24 @@ assert = require 'assert'
             'Creates a Parser.RegExp': (topic) ->
                 assert.deepEqual (new Parser.RegExp /foo/), topic
 
+        'Parser.EOF':
+            topic: ->
+                Parser.EOF
+
+            'Matches empty string': (topic) ->
+                result = topic.parse ''
+                assert.ok result.didSucceed
+
+                continuation = result.value
+                assert.equal continuation.value, null
+                assert.ok continuation.source.isEmpty()
+
+            'Doesn\'t match non-empty string': (topic) ->
+                result = topic.parse ' '
+                assert.ok !result.didSucceed
+
+                message = result.message
+                assert.equal message.text, 'Expected EOF'
+                assert.equal (String message.source), ' '
+
     .export module

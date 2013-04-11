@@ -64,3 +64,11 @@ class Parser.RegExp extends Parser
 
 Parser.addConverter 'RegExp', (str) ->
     new Parser.RegExp str
+
+Parser.EOF = new Parser (source) ->
+    source = Port.from source
+
+    if source.isEmpty()
+        new Success (new Continuation null, source)
+    else
+        new Failure (new Message 'Expected EOF', source)
