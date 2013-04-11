@@ -23,7 +23,7 @@ dist/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
 	cat src/suffix.txt >> $@
 
 %.min.js: %.js
-	uglifyjs $< > $@
+	uglifyjs -m -c < $< > $@
 
 browser: dist/$(ALL_JS).js
 
