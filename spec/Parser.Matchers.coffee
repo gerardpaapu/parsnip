@@ -82,5 +82,27 @@ assert = require 'assert'
                 message = result.message
                 assert.equal message.text, 'Expected EOF'
                 assert.equal (String message.source), ' '
+        'Parser.Keywords':
+            topic: ->
+                Parser.Keywords
+                    foo: 'foo'
+                    bar: 'bar'
+                    f: 'f'
+        
+            'It matches each keyword': (t) ->
+                assert.ok (t.parse 'foo').didSucceed
+                assert.ok (t.parse 'bar').didSucceed
+                assert.ok (t.parse 'f').didSucceed
+ 
+            'With the right value': (t) ->
+                assert.strictEqual (t.parse 'foorest').value.value, 'foo'
+                assert.strictEqual (t.parse 'frest').value.value, 'f'
+                assert.strictEqual (t.parse 'barrest').value.value, 'bar'
+ 
+            'Leaving the rest': (t) ->
+                assert.strictEqual (String (t.parse 'foorest').value.source), 'rest'
+                assert.strictEqual (String (t.parse 'frest').value.source), 'rest'
+                assert.strictEqual (String (t.parse 'barrest').value.source), 'rest' 
+                
 
     .export module

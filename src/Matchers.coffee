@@ -72,3 +72,19 @@ Parser.EOF = new Parser (source) ->
         new Success (new Continuation null, source)
     else
         new Failure (new Message 'Expected EOF', source)
+
+keys = Object.keys || (obj) ->
+    k for k, v of obj when Object::hasOwnProperty.call(obj, k)
+
+Parser.Keywords = (obj) ->
+    _keys = keys obj
+    _keys.sort (a, b) -> b.length - a.length
+
+    keyword = (k, v) ->
+        (new Parser.Exactly k)
+            .convert (_) -> v
+
+    parsers = for k in _keys
+        keyword k, obj[k]
+
+    Parser.Any parsers
