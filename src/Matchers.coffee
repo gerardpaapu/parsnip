@@ -31,9 +31,7 @@ cloneRegexp = (source) ->
         if source.multiline then 'm' else '',
     ].join('')
 
-    destination = new RegExp src, flags
-
-    destination
+    new RegExp src, flags
 
 class Parser.RegExp extends Parser
     constructor: (pattern, index) ->
