@@ -25,14 +25,14 @@ dist/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
 	uglifyjs $< > $@
 
 browser: dist/$(ALL_JS).js
-	
+
 minify: dist/$(ALL_JS).min.js
 
 test:
-	vows --spec spec/*
+	vows --spec $(wildcard spec/*)
 
 clean:
-	-rm build/*
+	-rm $(wildcard build/*)
 	-rm -r build
-	-rm dist/*
+	-rm $(wildcard dist/*)
 	-rm -r dist

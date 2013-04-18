@@ -23,17 +23,18 @@ dist/$(ALL_JS).js: $(JS_FILES) src/prefix.txt src/suffix.txt
 	cat src/suffix.txt >> $@
 
 %.min.js: %.js
-	uglifyjs -m -c < $< > $@
+	uglifyjs $< > $@
 
 browser: dist/$(ALL_JS).js
 
 minify: dist/$(ALL_JS).min.js
 
 test:
-	vows --spec spec/* json/spec/*
+	vows --spec $(wildcard spec/*) $(wildcard json/spec/*)
 
 clean:
-	-rm build/*
+	-rm $(wildcard build/*)
 	-rm -r build
-	-rm dist/*
+	-rm $(wildcard dist/*)
 	-rm -r dist
+	cd json; make clean
