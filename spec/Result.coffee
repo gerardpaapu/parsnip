@@ -1,31 +1,31 @@
 ###
 Tests that the Monad laws hold using parser values
-and the static methods bind, mreturn, and mzero.
+and the static methods chain, of, and zero.
 ###
 vows = require 'vows'
 assert = require 'assert'
 {Result, Success, Failure} = require '../src/Parser'
-{mreturn, bind} = Result
+{of: $of, chain} = Result
 fail = Result.failWithMessage
 
 # reverse: (str:String) -> Result<String>
 reverse = (str) ->
     chars = str.split ''
     reversed = do chars.reverse
-    mreturn reversed.join ''
+    $of reversed.join ''
 
 # capitalize: (str:String) -> Result<String>
 capitalize = (str) ->
     first = do (str.charAt 0).toUpperCase
     rest = str.slice 1
 
-    mreturn first + rest
+    $of first + rest
 
 (vows.describe 'Result monad operations')
     .addBatch
         'Left identity: (return a) >>= f is f a':
             topic: ->
-                left  = bind (mreturn 'foo'), reverse
+                left  = chain ($of 'foo'), reverse
                 right = reverse 'foo'
                 [left, right]
 
@@ -38,7 +38,7 @@ capitalize = (str) ->
 
         'Right identity (failure): m >>= return is m':
             topic: -> 
-                bind (fail 'oops'), mreturn
+                chain (fail 'oops'), $of
 
             'is failure': (t) ->
                 assert.ok not t.didSucceed
@@ -48,7 +48,7 @@ capitalize = (str) ->
 
         'Right identity (success): m >>= return is m':
             topic: -> 
-                bind (mreturn 'okay'), mreturn
+                chain ($of 'okay'), $of
 
             'is success': (t) ->
                 assert.ok t.didSucceed
@@ -59,8 +59,8 @@ capitalize = (str) ->
         'Associativity (success): (m >>= f) >>= g is m >>= (\\x -> f x >>= g)':
             topic: ->
                 m = new Success 'okay'
-                a = bind (bind m, reverse), capitalize
-                b = bind m, ((x) -> bind (reverse x), capitalize)
+                a = chain (chain m, reverse), capitalize
+                b = chain m, ((x) -> chain (reverse x), capitalize)
                 [a, b]
 
             'left and right are a success': ([left, right]) ->
@@ -73,8 +73,8 @@ capitalize = (str) ->
         'Associativity (failure): (m >>= f) >>= g is m >>= (\\x -> f x >>= g)':
             topic: ->
                 m = new Failure 'okay'
-                a = bind (bind m, reverse), capitalize
-                b = bind m, ((x) -> bind (reverse x), capitalize)
+                a = chain (chain m, reverse), capitalize
+                b = chain m, ((x) -> chain (reverse x), capitalize)
                 [a, b]
 
             'left and right are not a success': ([left, right]) ->

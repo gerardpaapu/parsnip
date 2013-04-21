@@ -137,7 +137,7 @@ parseExpression = do ->
     JSON = require '../json/src/Json'
 
     symbol = (Parser.from /[\*\+\._a-z][\*\+\._a-z0-9]*/i)
-        .convertTo Symbol
+        .mapTo Symbol
 
     atom = Any [JSON.Number, JSON.String, symbol]
 
@@ -161,7 +161,7 @@ parseExpression = do ->
     quote = Parser.lazy ->
         expression
             .precededBy('\'')
-            .convert((expr) ->
+            .map((expr) ->
                 [new Symbol 'quote'].concat(expr))
 
     expression

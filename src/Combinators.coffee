@@ -1,48 +1,59 @@
 {Parser, Message, Continuation} = require './Core'
 {Success, Failure, Result} = require './Result'
-{bind, mreturn, mzero} = Parser
+{chain, of: $of, zero} = Parser
 {Port, Location} = require './Port'
 
 Parser::andThen = (parser) ->
-    bind this, (v1) ->
-        bind parser, (v2) ->
-            mreturn [v1, v2]
+    this.chain (v1) ->
+        parser.chain (v2) ->
+            $of [v1, v2]
 
 Parser::convert = (converter) ->
-    @bind (v) ->
+    @chain (v) ->
         new Parser.Succeed converter v
 
 Parser::convertTo = (Klass) ->
     @convert (v) -> new Klass v
 
+# append :: (Monad m) => [m a] -> m [a]
+append = (M) ->
+    (ls) ->
+        cons = (a, b) -> [a].concat b
+
+        if ls.length is 0
+            M.of []
+        else
+            [first, rest...] = ls
+            chain first, (a) ->
+                ((append M) rest).map (b) ->
+                     cons a, b
+
 Seq = Parser.Seq = (parsers) ->
+    (append Parser)(Parser.from p for p in parsers)
+###
     cons = (a, b) -> [a].concat b
 
     if parsers.length is 0
-        new Parser.Succeed []
+        Parser.of []
     else
         [first, rest...] = parsers
 
-        (Parser.from first).bind (head) ->
-            (Seq rest).bind (tail) ->
-                new Parser.Succeed (cons head, tail)
+        (Parser.from first).chain (head) ->
+            (Seq rest).chain (tail) ->
+                Parser.of (cons head, tail)
+###
 
 Parser.addConverter 'Array', Seq
 
 Or = Parser.Or = (a, b) ->
-    a = Parser.from a
-    b = Parser.from b
-    
-    new Parser (source) ->
-        result = a.parse source
+    (Parser.from a).or b
 
-        if result.didSucceed
-            result
-        else
-            b.parse source
-
-Parser::or = (other) ->
-    Or this, other
+Parser::concat = (other) ->
+    new Parser (source) =>
+        (@parse source).lconcat ->
+            (Parser.from other).parse source
+            
+Parser::or = Parser::concat
 
 Parser::maybe = (v) ->
     Or this, (new Parser.Succeed v)
@@ -62,9 +73,9 @@ Parser::onceOrMore = ->
     cons = (a, b) ->
         [a].concat b
 
-    @bind (head) =>
+    @chain (head) =>
         parseRest = (do @onceOrMore).maybe []
-        parseRest.bind (tail) ->
+        parseRest.chain (tail) ->
             new Parser.Succeed (cons head, tail)
 
 Parser::zeroOrMore = ->
@@ -73,20 +84,20 @@ Parser::zeroOrMore = ->
 
 Parser::precededBy = (prefix) ->
     (Parser.from prefix)
-        .bind (_) => this
+        .chain (_) => this
 
 Parser::followedBy = (suffix) ->
-    @bind (v1) ->
-        (Parser.from suffix).bind (_) ->
-            mreturn v1
+    @chain (v1) ->
+        (Parser.from suffix).chain (_) ->
+            $of v1
 
 Parser::surroundedBy = (left, right) ->
     (@precededBy left).followedBy right
 
 Parser::is = (test) ->
-    @bind (v1) ->
+    @chain (v1) ->
         if (test v1)
-            mreturn v1
+            $of v1
         else
             new Parser.Fail 'Failed predicate'
 
@@ -112,7 +123,7 @@ Parser::withLocation = (fn) ->
         _source = Port.from _source
         start = _source.getLocation()
 
-        (@parse _source).bind (cont) ->
+        (@parse _source).chain (cont) ->
             {source, value} = cont
             end = source.getLocation()
             _value = fn value, start, end
@@ -146,7 +157,7 @@ Parser::toFunction = (opts) ->
 
 Parser::dontConsume = ->
     new Parser (source) =>
-        (@parse source).bind (c) ->
+        (@parse source).chain (c) ->
             new Success (new Continuation c.value, source)
 
 Parser::lookAhead = (p) ->

@@ -78,25 +78,32 @@ class Continuation
     constructor: (@value, @source) ->
 
 ###
-mzero, return and bind implement the monad operations
+zero, return and chain implement the monad operations
 
 By implementing these methods we can exploit
 existing composability patterns for monadic values
 
-* I'm using mreturn as the name for return because
+* I'm using of as the name for return because
   return is a keyword in javascript (and coffeescript)
 ###        
-Parser.mzero = -> new Parser.Fail 'zero'
-Parser.mreturn = (v) -> new Parser.Succeed v
-Parser.bind = (m, f) ->
+Parser.zero = -> new Parser.Fail 'zero'
+Parser.of = (v) -> new Parser.Succeed v
+Parser.chain = (m, f) ->
     new Parser (source) =>
-        (m.parse source).bind (c) ->
+        (m.parse source).chain (c) ->
             # c is a continuation
-            parser = f c.value
-            parser.parse c.source
+            (f c.value, Parser).parse c.source
 
-# It's also useful to have bind as an instance method
-Parser::bind = (f) -> Parser.bind this, f
+
+
+# It's also useful to have chain as an instance metho
+
+Parser::chain = (f) -> Parser.chain this, f
+Parser::of = Parser.of
+Parser::map = (f) ->
+    @chain (v) =>
+        (@of || @constructor.of) (f v)
+
 
 Parser.lazy = (makeParser) ->
     parser = null

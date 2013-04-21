@@ -45,7 +45,7 @@ stringParser = do ->
     simpleEscape = ->
         (Parser.from ['\\', new Parser.Item() ])
             # discard the leading slash
-            .bind ([_, code]) ->
+            .chain ([_, code]) ->
                 v = escapeTable[code]
                 if v?
                     new Parser.Succeed v

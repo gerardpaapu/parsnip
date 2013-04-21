@@ -5,24 +5,30 @@ class Result
     @failWithMessage: (message) ->
         new Failure message
 
-    @bind: (m, f) ->
-        m.bind f
+    @chain: (m, f) ->
+        m.chain f
 
-    @mzero: -> 
+    @zero: -> 
         Result.failWithMessage 'failed'
 
-    @mreturn: (value) ->
+    @of: (value) ->
         Result.succeedWithValue value
+
+    concat: (v) ->
+        @lconcat (-> v)
 
 class Success extends Result
     constructor: (@value) ->
     didSucceed: true
-    bind: (fn) -> fn @value
+    chain: (fn) -> fn @value
+    lconcat: (_) -> this
+
 
 class Failure extends Result
     constructor: (@message) ->
     didSucceed: false
-    bind: (_) -> this
+    chain: (_) -> this
+    lconcat: (f) -> f()
 
 exports.Result = Result
 exports.Success = Success

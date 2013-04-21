@@ -1,6 +1,6 @@
 ###
 Tests that the Monad laws hold using parser values
-and the static methods bind, mreturn, and mzero.
+and the static methods chain, of, and zero.
 ###
 
 
@@ -8,20 +8,20 @@ vows = require 'vows'
 assert = require 'assert'
 
 {Parser} = require '../src/Parser'
-{mzero, mreturn, bind} = Parser
+{zero, of: $of, chain} = Parser
 
 # reverse: (str:String) -> Result<String>
 reverse = (str) ->
     chars = str.split ''
     reversed = do chars.reverse
-    mreturn reversed.join ''
+    $of reversed.join ''
 
 # capitalize: (str:String) -> Result<String>
 capitalize = (str) ->
     first = do (str.charAt 0).toUpperCase
     rest = str.slice 1
 
-    mreturn first + rest
+    $of first + rest
 
 # TODO: replace this with a large random 
 # sample of possible inputs
@@ -94,7 +94,7 @@ assert.parsersNotEqual = (a, b) ->
     .addBatch
         'Left identity: (return a) >>= f is f a':
             topic: ->
-                left  = bind (mreturn 'foo'), reverse
+                left  = chain ($of 'foo'), reverse
                 right = reverse 'foo'
                 [left, right]
 
@@ -103,7 +103,7 @@ assert.parsersNotEqual = (a, b) ->
 
         'Right identity: m >>= return is m':
             topic: -> 
-                bind (Parser.from 'foo'), mreturn
+                chain (Parser.from 'foo'), $of
 
             'is equal to (Parser.from \'foo\')': (t) ->
                 assert.parsersEqual t, (Parser.from 'foo')
@@ -112,14 +112,14 @@ assert.parsersNotEqual = (a, b) ->
                 assert.parsersNotEqual t, (Parser.from 'fun')
 
             'is not equal to \'foo\' >>= (\\x -> return \'bar\')': (t) ->
-                right = bind (Parser.from 'foo'), (x) -> mreturn 'bar'
+                right = chain (Parser.from 'foo'), (x) -> $of 'bar'
                 assert.parsersNotEqual t, right
 
         'Associativity: (m >>= f) >>= g is m >>= (\\x -> f x >>= g)':
             topic: ->
                 m = new Parser.Succeed 'okay'
-                a = bind (bind m, reverse), capitalize
-                b = bind m, ((x) -> bind (reverse x), capitalize)
+                a = chain (chain m, reverse), capitalize
+                b = chain m, ((x) -> chain (reverse x), capitalize)
                 [a, b]
 
             'left == right': ([left, right]) ->
