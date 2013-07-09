@@ -1,0 +1,24 @@
+{
+  "name": "parsnip",
+  "version": "0.0.0",
+  "description": "Parser combinators for javascript",
+  "main": "js/Parser.js",
+  "scripts": {
+    "test": "vows --spec spec/*",
+    "install": "cake install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sharkbrainguy/parsnip.git"
+  },
+  "author": "gerard@gerardpaapu.com",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/sharkbrainguy/parsnip/issues"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "vows": "~0.7.0",
+    "glob": "~3.2.1"
+  }
+}
