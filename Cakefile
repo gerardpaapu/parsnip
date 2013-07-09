@@ -5,7 +5,6 @@ coffee = require 'coffee-script'
 task 'install', 'compile the coffee source to js', ->
     fs.mkdir 'js', ->
         glob 'src/*.coffee', (err, infiles) ->
-            console.log infiles
             if err? then console.error err
 
             infiles.forEach (infile) ->
@@ -13,7 +12,7 @@ task 'install', 'compile the coffee source to js', ->
                 fs.readFile infile, { encoding: 'utf-8' }, (err, source) ->
                     if err?
                         console.error err
-                    else 
+                    else
                         output = coffee.compile source, bare: true
                         fs.writeFile outfile, output, { encoding: 'utf-8' }, (err) ->
                             if err? then console.error err
