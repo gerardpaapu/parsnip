@@ -7,7 +7,7 @@ and the static methods chain, of, and zero.
 vows = require 'vows'
 assert = require 'assert'
 
-{Parser} = require '../src/Parser'
+{Parser} = require '../src/Parsnip'
 {zero, of: $of, chain} = Parser
 
 # reverse: (str:String) -> Result<String>

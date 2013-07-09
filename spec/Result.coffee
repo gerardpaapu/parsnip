@@ -4,7 +4,7 @@ and the static methods chain, of, and zero.
 ###
 vows = require 'vows'
 assert = require 'assert'
-{Result, Success, Failure} = require '../src/Parser'
+{Result, Success, Failure} = require '../src/Parsnip'
 {of: $of, chain} = Result
 fail = Result.failWithMessage
 
