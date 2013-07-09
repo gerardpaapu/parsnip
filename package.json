@@ -5,7 +5,7 @@
   "main": "js/Parsnip.js",
   "scripts": {
     "test": "vows --spec spec/*",
-    "install": "cake install"
+    "prepublish": "cake install"
   },
   "repository": {
     "type": "git",
